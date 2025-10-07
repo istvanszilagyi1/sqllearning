@@ -6,43 +6,10 @@ from datetime import datetime
 import os
 
 # --- CONFIG ---
-TEACHER_PASSWORD = "sql2025"  # <-- Itt állítsd be a saját jelszavad!
+TEACHER_PASSWORD = "sql2025"
 
 # --- Page setup ---
-st.set_page_config(
-    page_title="SQL Training App",
-    page_icon="🎓",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-st.markdown("""
-    <style>
-    /* Page background */
-    .stApp {
-        background-color: #f5f5f5;  /* Világos szürke háttér */
-    }
-    /* Sidebar */
-    [data-testid="stSidebar"] {
-        background-color: #333333;  /* Sötétszürke sidebar */
-        color: white;
-    }
-    /* Buttons */
-    .stButton>button {
-        background-color: #ffcc00;  /* Veeva sárga */
-        color: black;
-        font-weight: bold;
-    }
-    /* Headings */
-    h1, h2, h3, h4, h5, h6 {
-        color: #333333;  /* Sötétszürke címsorok */
-    }
-    /* Inputs, text areas */
-    .stTextInput>div>div>input, .stTextArea>div>div>textarea {
-        border: 2px solid #ffcc00;
-    }
-    </style>
-""", unsafe_allow_html=True)
+st.set_page_config(page_title="SQL Training App", layout="wide")
 
 st.title("🎓 Interactive SQL Training App")
 st.write("Students: Enter your name, complete the SQL task, and run your query. Results are logged automatically.")
