@@ -23,6 +23,15 @@ if "name" not in st.session_state:
 if "task_index" not in st.session_state:
     st.session_state.task_index = 0
 
+# --- CSV log function ---
+def log_submission(name, task_type, task_index, query, correct, score):
+    file_exists = os.path.isfile("submissions.csv")
+    with open("submissions.csv", "a", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f, quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        if not file_exists:
+            writer.writerow(["timestamp", "name", "task_type", "task_index", "query", "correct", "score"])
+        writer.writerow([datetime.now().isoformat(), name, task_type, task_index, query, correct, score])
+
 # --- Mode selection ---
 mode = st.sidebar.radio("Mode", ["Student", "Teacher"])
 
@@ -98,29 +107,19 @@ if mode == "Student":
     ])
     conn.commit()
 
-    # --- Sidebar: Detailed schema + task type ---
+    # --- Sidebar: Detailed schema + ER Diagram ---
     st.sidebar.header("Database Schema & Examples")
     if st.sidebar.button("Show ER Diagram"):
         dot = graphviz.Digraph(comment='Database Schema')
-
-        # Tábla: employees
         dot.node('employees', 'employees\nid PK\nname\ndepartment_id FK\nsalary\nhire_date')
-
-        # Tábla: departments
         dot.node('departments', 'departments\nid PK\nname\nmanager')
-
-        # Tábla: sales
         dot.node('sales', 'sales\nid PK\nemployee_id FK\nproduct\namount\nsale_date')
-
-        # Tábla: customers
         dot.node('customers', 'customers\nid PK\nname\ncountry\nindustry')
-
-        # Kapcsolatok
         dot.edge('employees', 'departments', label='department_id')
         dot.edge('sales', 'employees', label='employee_id')
-
         st.subheader("📊 Database ER Diagram")
         st.graphviz_chart(dot)
+
     st.sidebar.markdown("""
     **employees**  
     - id: integer, PK  
@@ -201,21 +200,14 @@ if mode == "Student":
                 st.bar_chart(df[numeric_cols])
 
             expected_df = pd.read_sql_query(current_task["expected"], conn)
-            if df.equals(expected_df):
+            correct = df.equals(expected_df)
+            if correct:
                 st.success(f"🎉 Correct answer, {st.session_state.name}! +1 point")
                 st.session_state.score += 1
-                correct = True
             else:
                 st.info("❌ Not the expected result. Try again!")
-                correct = False
 
-            # log CSV
-            file_exists = os.path.isfile("submissions.csv")
-            with open("submissions.csv", "a", newline="", encoding="utf-8") as f:
-                writer = csv.writer(f)
-                if not file_exists:
-                    writer.writerow(["timestamp", "name", "task_type", "task_index", "query", "correct", "score"])
-                writer.writerow([datetime.now().isoformat(), st.session_state.name, task_type, st.session_state.task_index, sql_query, correct, st.session_state.score])
+            log_submission(st.session_state.name, task_type, st.session_state.task_index, sql_query, correct, st.session_state.score)
 
         except Exception as e:
             st.error(f"⚠️ Error: {e}")
@@ -238,15 +230,20 @@ else:
     if password == TEACHER_PASSWORD:
         st.success("Access granted. Welcome, teacher!")
 
+        # --- Check if CSV exists ---
         if not os.path.exists("submissions.csv"):
             st.warning("⚠️ No previous submissions found — creating a new file.")
-            df = pd.DataFrame(columns=["name", "email", "answers", "score"])
-            df.to_csv("submissions.csv", index=False)
+            df = pd.DataFrame(columns=["timestamp", "name", "task_type", "task_index", "query", "correct", "score"])
+            df.to_csv("submissions.csv", index=False, encoding="utf-8")
         else:
             try:
-                df = pd.read_csv("submissions.csv", delimiter=';')
+                df = pd.read_csv("submissions.csv", encoding="utf-8")
             except Exception as e:
                 st.error(f"⚠️ Error reading submissions.csv: {e}")
-                df = pd.DataFrame(columns=["timestamp", "name", "task", "query", "correct", "score"])
+                df = pd.DataFrame(columns=["timestamp", "name", "task_type", "task_index", "query", "correct", "score"])
+
+        st.dataframe(df, use_container_width=True)
+        st.download_button("⬇️ Download submissions (CSV)", df.to_csv(index=False, encoding="utf-8"), file_name="submissions.csv")
+
     elif password:
         st.error("Incorrect password.")
