@@ -200,7 +200,7 @@ if mode == "Student":
 
             file_exists = os.path.isfile("submissions.csv")
             with open("submissions.csv", "a", newline="", encoding="utf-8") as f:
-                writer = csv.writer(f)
+                writer = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 if not file_exists:
                     writer.writerow(["timestamp", "name", "task_type", "task_index", "query", "correct", "score"])
                 writer.writerow(
@@ -229,11 +229,11 @@ else:
         st.success("Access granted. Welcome, teacher!")
 
         # --- Check if CSV exists ---
-        if os.path.exists("submissions.csv"):
-            df = pd.read_csv("submissions.csv")
-            st.dataframe(df, use_container_width=True)
-            st.download_button("⬇️ Download submissions (CSV)", df.to_csv(index=False).encode("utf-8"),
-                               file_name="submissions.csv")
+        try:
+            df = pd.read_csv("submissions.csv", delimiter=',', encoding='utf-8', on_bad_lines='skip')
+        except Exception as e:
+            st.error(f"⚠️ Error reading submissions.csv: {e}")
+            df = pd.DataFrame(columns=["timestamp", "name", "task_type", "task_index", "query", "correct", "score"])
         else:
             st.info("No submissions yet.")
 
