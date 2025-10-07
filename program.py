@@ -23,15 +23,6 @@ if "name" not in st.session_state:
 if "task_index" not in st.session_state:
     st.session_state.task_index = 0
 
-# --- CSV log function ---
-def log_submission(name, task_type, task_index, query, correct, score):
-    file_exists = os.path.isfile("submissions.csv")
-    with open("submissions.csv", "a", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        if not file_exists:
-            writer.writerow(["timestamp", "name", "task_type", "task_index", "query", "correct", "score"])
-        writer.writerow([datetime.now().isoformat(), name, task_type, task_index, query, correct, score])
-
 # --- Mode selection ---
 mode = st.sidebar.radio("Mode", ["Student", "Teacher"])
 
@@ -207,7 +198,14 @@ if mode == "Student":
             else:
                 st.info("❌ Not the expected result. Try again!")
 
-            log_submission(st.session_state.name, task_type, st.session_state.task_index, sql_query, correct, st.session_state.score)
+            file_exists = os.path.isfile("submissions.csv")
+            with open("submissions.csv", "a", newline="", encoding="utf-8") as f:
+                writer = csv.writer(f)
+                if not file_exists:
+                    writer.writerow(["timestamp", "name", "task_type", "task_index", "query", "correct", "score"])
+                writer.writerow(
+                    [datetime.now().isoformat(), st.session_state.name, task_type, st.session_state.task_index,
+                     sql_query, correct, st.session_state.score])
 
         except Exception as e:
             st.error(f"⚠️ Error: {e}")
@@ -231,23 +229,13 @@ else:
         st.success("Access granted. Welcome, teacher!")
 
         # --- Check if CSV exists ---
-        if not os.path.exists("submissions.csv"):
-            st.warning("⚠️ No previous submissions found — creating a new file.")
-            df = pd.DataFrame(columns=["timestamp", "name", "task_type", "task_index", "query", "correct", "score"])
-            df.to_csv("submissions.csv", index=False, encoding="utf-8")
+        if os.path.exists("submissions.csv"):
+            df = pd.read_csv("submissions.csv")
+            st.dataframe(df, use_container_width=True)
+            st.download_button("⬇️ Download submissions (CSV)", df.to_csv(index=False).encode("utf-8"),
+                               file_name="submissions.csv")
         else:
-            try:
-                df = pd.read_csv("submissions.csv", encoding="utf-8")
-            except Exception as e:
-                try:
-                    df = pd.read_csv("submissions.csv", encoding="utf-8", on_bad_lines='skip')
-                except Exception as e:
-                    st.error(f"⚠️ Error reading submissions.csv: {e}")
-                    df = pd.DataFrame(
-                        columns=["timestamp", "name", "task_type", "task_index", "query", "correct", "score"])
-
-        st.dataframe(df, use_container_width=True)
-        st.download_button("⬇️ Download submissions (CSV)", df.to_csv(index=False, encoding="utf-8"), file_name="submissions.csv")
+            st.info("No submissions yet.")
 
     elif password:
         st.error("Incorrect password.")
