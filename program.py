@@ -244,9 +244,9 @@ else:
             df.to_csv("submissions.csv", index=False)
         else:
             try:
-                df = pd.read_csv("submissions.csv")
+                df = pd.read_csv("submissions.csv", delimiter=';')
             except Exception as e:
-                st.error(f"❌ Error reading submissions.csv: {e}")
-                df = pd.DataFrame(columns=["name", "email", "answers", "score"])
+                st.error(f"⚠️ Error reading submissions.csv: {e}")
+                df = pd.DataFrame(columns=["timestamp", "name", "task", "query", "correct", "score"])
     elif password:
         st.error("Incorrect password.")
