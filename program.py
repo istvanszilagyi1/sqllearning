@@ -229,13 +229,17 @@ else:
         st.success("Access granted. Welcome, teacher!")
 
         # --- Check if CSV exists ---
-        try:
-            df = pd.read_csv("submissions.csv", delimiter=',', encoding='utf-8', on_bad_lines='skip')
-        except Exception as e:
-            st.error(f"⚠️ Error reading submissions.csv: {e}")
-            df = pd.DataFrame(columns=["timestamp", "name", "task_type", "task_index", "query", "correct", "score"])
-        else:
-            st.info("No submissions yet.")
+        if os.path.exists("submissions.csv"):
+            try:
+                df = pd.read_csv("submissions.csv", encoding="utf-8", on_bad_lines="skip")
+                st.dataframe(df, use_container_width=True)
+                st.download_button(
+                    "⬇️ Download submissions (CSV)",
+                    df.to_csv(index=False).encode("utf-8"),
+                    file_name="submissions.csv"
+                )
+            except Exception as e:
+                st.error(f"⚠️ Error reading submissions.csv: {e}")
 
     elif password:
         st.error("Incorrect password.")
