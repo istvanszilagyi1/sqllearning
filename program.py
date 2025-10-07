@@ -4,6 +4,7 @@ import pandas as pd
 import csv
 from datetime import datetime
 import os
+import graphviz
 
 # --- CONFIG ---
 TEACHER_PASSWORD = "sql2025"
@@ -100,8 +101,6 @@ if mode == "Student":
     # --- Sidebar: Detailed schema + task type ---
     st.sidebar.header("Database Schema & Examples")
     if st.sidebar.button("Show ER Diagram"):
-        import graphviz
-
         dot = graphviz.Digraph(comment='Database Schema')
 
         # Tábla: employees
