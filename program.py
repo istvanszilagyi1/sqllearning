@@ -27,7 +27,7 @@ if "task_index" not in st.session_state:
 def log_submission(name, task_type, task_index, query, correct, score):
     file_exists = os.path.isfile("submissions.csv")
     with open("submissions.csv", "a", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f, quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        writer = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         if not file_exists:
             writer.writerow(["timestamp", "name", "task_type", "task_index", "query", "correct", "score"])
         writer.writerow([datetime.now().isoformat(), name, task_type, task_index, query, correct, score])
@@ -239,8 +239,12 @@ else:
             try:
                 df = pd.read_csv("submissions.csv", encoding="utf-8")
             except Exception as e:
-                st.error(f"⚠️ Error reading submissions.csv: {e}")
-                df = pd.DataFrame(columns=["timestamp", "name", "task_type", "task_index", "query", "correct", "score"])
+                try:
+                    df = pd.read_csv("submissions.csv", encoding="utf-8", on_bad_lines='skip')
+                except Exception as e:
+                    st.error(f"⚠️ Error reading submissions.csv: {e}")
+                    df = pd.DataFrame(
+                        columns=["timestamp", "name", "task_type", "task_index", "query", "correct", "score"])
 
         st.dataframe(df, use_container_width=True)
         st.download_button("⬇️ Download submissions (CSV)", df.to_csv(index=False, encoding="utf-8"), file_name="submissions.csv")
