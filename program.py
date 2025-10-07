@@ -11,17 +11,6 @@ TEACHER_PASSWORD = "sql2025"
 # --- Page setup ---
 st.set_page_config(page_title="SQL Training App", layout="wide")
 
-# Custom CSS for Veeva colors (yellow & gray)
-st.markdown("""
-    <style>
-    .stApp { background-color: #f5f5f5; }
-    [data-testid="stSidebar"] { background-color: #333333; color: white; }
-    .stButton>button { background-color: #ffcc00; color: black; font-weight: bold; }
-    h1, h2, h3, h4, h5, h6 { color: #333333; }
-    .stTextInput>div>div>input, .stTextArea>div>div>textarea { border: 2px solid #ffcc00; }
-    </style>
-""", unsafe_allow_html=True)
-
 st.title("🎓 Interactive SQL Training App")
 st.write("Students: Enter your name, complete the SQL task, and run your query. Results are logged automatically.")
 
