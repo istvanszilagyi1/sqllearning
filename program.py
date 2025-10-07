@@ -12,13 +12,15 @@ TEACHER_PASSWORD = "sql2025"
 st.set_page_config(page_title="SQL Training App", layout="wide")
 
 st.title("🎓 Interactive SQL Training App")
-st.write("Students: Enter your name, complete the SQL task, and run your query. Results are logged automatically.")
+st.write("Students: Enter your name, select a task type, complete the SQL task, and run your query. Results are logged automatically.")
 
 # --- Session state ---
 if "score" not in st.session_state:
     st.session_state.score = 0
 if "name" not in st.session_state:
     st.session_state.name = ""
+if "task_index" not in st.session_state:
+    st.session_state.task_index = 0
 
 # --- Mode selection ---
 mode = st.sidebar.radio("Mode", ["Student", "Teacher"])
@@ -95,84 +97,113 @@ if mode == "Student":
     ])
     conn.commit()
 
-    # --- Sidebar info ---
-    st.sidebar.header("Database Schema")
+    # --- Sidebar: Detailed schema + task type ---
+    st.sidebar.header("Database Schema & Examples")
     st.sidebar.markdown("""
-    **Tables:**  
-    - employees(id, name, department_id, salary, hire_date)  
-    - departments(id, name, manager)  
-    - sales(id, employee_id, product, amount, sale_date)  
-    - customers(id, name, country, industry)  
+    **employees**  
+    - id: integer, PK  
+    - name: text (e.g., 'Anna Kovacs')  
+    - department_id: integer (FK to departments)  
+    - salary: integer (e.g., 400000)  
+    - hire_date: date ('YYYY-MM-DD')  
+
+    **departments**  
+    - id: integer, PK  
+    - name: text (e.g., 'IT')  
+    - manager: text (e.g., 'Peter Nagy')  
+
+    **sales**  
+    - id: integer, PK  
+    - employee_id: integer (FK to employees)  
+    - product: text  
+    - amount: integer  
+    - sale_date: date  
+
+    **customers**  
+    - id: integer, PK  
+    - name: text  
+    - country: text  
+    - industry: text  
     """)
 
-    # --- Tasks list (story + tip + expected query) ---
-    tasks = [
-        {
-            "story": "🕵️‍♀️ You are the new HR detective at Veeva Systems. First, let's get to know all the employees in the company. Peek at their names, departments, and salaries. It's like reading a fun staff directory!",
-            "tip": "Use SELECT to choose which columns you want to see.",
-            "task": "List all employees with their name, department_id, and salary.",
-            "expected": "SELECT * FROM employees;"
-        },
-        {
-            "story": "💼 The IT manager is curious who's earning more than 600,000 HUF. It's like a treasure hunt for the high-salary heroes!",
-            "tip": "Use WHERE to filter rows by a condition.",
-            "task": "List all IT employees with salary greater than 600,000.",
-            "expected": "SELECT * FROM employees WHERE department_id=2 AND salary>600000;"
-        },
-        {
-            "story": "📅 HR wants to send welcome emails to the newest recruits. Let's sort the employees by hire date, newest first. Imagine a 'Welcome Party' queue!",
-            "tip": "Use ORDER BY to sort results ascending (ASC) or descending (DESC).",
-            "task": "List all employees ordered by hire_date descending.",
-            "expected": "SELECT * FROM employees ORDER BY hire_date DESC;"
-        },
-        {
-            "story": "🏢 The CEO is counting how many employees are in each department. Let's group them like collecting jellybeans in jars by color!",
-            "tip": "Use GROUP BY to group rows and COUNT() to count them.",
-            "task": "Count the number of employees per department.",
-            "expected": "SELECT department_id, COUNT(*) FROM employees GROUP BY department_id;"
-        }
-    ]
+    task_type = st.sidebar.selectbox("Select task type:", ["SELECT basics", "WHERE filters", "ORDER BY", "GROUP BY"])
 
-    # --- Iterate through tasks ---
-    for idx, t in enumerate(tasks, 1):
-        st.subheader(f"🧠 Task {idx}")
-        st.markdown(f"**Story:** {t['story']}")
-        st.markdown(f"**SQL Tip:** {t['tip']}")
-        st.markdown(f"**Task:** {t['task']}")
+    # --- Tasks dictionary ---
+    tasks = {
+        "SELECT basics": [
+            {"story": "🕵️‍♀️ You are the new HR detective. Peek at all employees' names, departments, and salaries.",
+             "tip": "Use SELECT to choose which columns to view.",
+             "task": "List all employees with their name, department_id, and salary.",
+             "expected": "SELECT * FROM employees;"}
+        ],
+        "WHERE filters": [
+            {"story": "💼 The IT manager is curious who's earning more than 600,000 HUF.",
+             "tip": "Use WHERE to filter rows by a condition.",
+             "task": "List all IT employees with salary greater than 600,000.",
+             "expected": "SELECT * FROM employees WHERE department_id=2 AND salary>600000;"}
+        ],
+        "ORDER BY": [
+            {"story": "📅 HR wants to send welcome emails to the newest recruits.",
+             "tip": "Use ORDER BY to sort results ascending or descending.",
+             "task": "List all employees ordered by hire_date descending.",
+             "expected": "SELECT * FROM employees ORDER BY hire_date DESC;"}
+        ],
+        "GROUP BY": [
+            {"story": "🏢 The CEO is counting how many employees are in each department.",
+             "tip": "Use GROUP BY to group rows and COUNT() to count them.",
+             "task": "Count the number of employees per department.",
+             "expected": "SELECT department_id, COUNT(*) FROM employees GROUP BY department_id;"}
+        ]
+    }
 
-        default_query = t["expected"]
-        sql_query = st.text_area(f"Write your SQL query for Task {idx}:", value=default_query, height=120, key=f"task_{idx}")
+    # --- Show current task ---
+    current_task = tasks[task_type][st.session_state.task_index]
 
-        if st.button(f"Run Task {idx} Query", key=f"run_{idx}"):
-            try:
-                df = pd.read_sql_query(sql_query, conn)
-                st.success("✅ Query executed successfully!")
-                st.dataframe(df, use_container_width=True)
+    st.subheader(f"🧠 {task_type} Task")
+    st.markdown(f"**Story:** {current_task['story']}")
+    st.markdown(f"**SQL Tip:** {current_task['tip']}")
+    st.markdown(f"**Task:** {current_task['task']}")
 
-                numeric_cols = df.select_dtypes(include=["int64", "float64"]).columns
-                if len(numeric_cols) > 0:
-                    st.subheader("📊 Visualization")
-                    st.bar_chart(df[numeric_cols])
+    sql_query = st.text_area("Write your SQL query here:", value=current_task["expected"], height=150)
 
-                expected_df = pd.read_sql_query(t["expected"], conn)
-                if df.equals(expected_df):
-                    st.success(f"🎉 Correct answer, {st.session_state.name}! +1 point")
-                    st.session_state.score += 1
-                    correct = True
-                else:
-                    st.info("❌ Not the expected result. Try again!")
-                    correct = False
+    # --- Run Query button ---
+    if st.button("Run Query"):
+        try:
+            df = pd.read_sql_query(sql_query, conn)
+            st.success("✅ Query executed successfully!")
+            st.dataframe(df, use_container_width=True)
 
-                # log CSV
-                file_exists = os.path.isfile("submissions.csv")
-                with open("submissions.csv", "a", newline="", encoding="utf-8") as f:
-                    writer = csv.writer(f)
-                    if not file_exists:
-                        writer.writerow(["timestamp", "name", "task", "query", "correct", "score"])
-                    writer.writerow([datetime.now().isoformat(), st.session_state.name, f"Task {idx}", sql_query, correct, st.session_state.score])
+            numeric_cols = df.select_dtypes(include=["int64", "float64"]).columns
+            if len(numeric_cols) > 0:
+                st.subheader("📊 Visualization")
+                st.bar_chart(df[numeric_cols])
 
-            except Exception as e:
-                st.error(f"⚠️ Error: {e}")
+            expected_df = pd.read_sql_query(current_task["expected"], conn)
+            if df.equals(expected_df):
+                st.success(f"🎉 Correct answer, {st.session_state.name}! +1 point")
+                st.session_state.score += 1
+                correct = True
+            else:
+                st.info("❌ Not the expected result. Try again!")
+                correct = False
+
+            # log CSV
+            file_exists = os.path.isfile("submissions.csv")
+            with open("submissions.csv", "a", newline="", encoding="utf-8") as f:
+                writer = csv.writer(f)
+                if not file_exists:
+                    writer.writerow(["timestamp", "name", "task_type", "task_index", "query", "correct", "score"])
+                writer.writerow([datetime.now().isoformat(), st.session_state.name, task_type, st.session_state.task_index, sql_query, correct, st.session_state.score])
+
+        except Exception as e:
+            st.error(f"⚠️ Error: {e}")
+
+    # --- Next task button ---
+    if st.button("Next Task"):
+        if st.session_state.task_index < len(tasks[task_type]) - 1:
+            st.session_state.task_index += 1
+        else:
+            st.info("No more tasks in this type. You can choose another type.")
 
     st.divider()
     st.subheader(f"🏅 Current Score for {st.session_state.name}: {st.session_state.score}")
