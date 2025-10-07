@@ -238,11 +238,15 @@ else:
     if password == TEACHER_PASSWORD:
         st.success("Access granted. Welcome, teacher!")
 
-        if os.path.exists("submissions.csv"):
-            df = pd.read_csv("submissions.csv")
-            st.dataframe(df, use_container_width=True)
-            st.download_button("⬇️ Download submissions (CSV)", df.to_csv(index=False).encode("utf-8"), file_name="submissions.csv")
+        if not os.path.exists("submissions.csv"):
+            st.warning("⚠️ No previous submissions found — creating a new file.")
+            df = pd.DataFrame(columns=["name", "email", "answers", "score"])
+            df.to_csv("submissions.csv", index=False)
         else:
-            st.info("No submissions yet.")
+            try:
+                df = pd.read_csv("submissions.csv")
+            except Exception as e:
+                st.error(f"❌ Error reading submissions.csv: {e}")
+                df = pd.DataFrame(columns=["name", "email", "answers", "score"])
     elif password:
         st.error("Incorrect password.")
