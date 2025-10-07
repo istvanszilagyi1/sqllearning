@@ -99,6 +99,29 @@ if mode == "Student":
 
     # --- Sidebar: Detailed schema + task type ---
     st.sidebar.header("Database Schema & Examples")
+    if st.sidebar.button("Show ER Diagram"):
+        import graphviz
+
+        dot = graphviz.Digraph(comment='Database Schema')
+
+        # Tábla: employees
+        dot.node('employees', 'employees\nid PK\nname\ndepartment_id FK\nsalary\nhire_date')
+
+        # Tábla: departments
+        dot.node('departments', 'departments\nid PK\nname\nmanager')
+
+        # Tábla: sales
+        dot.node('sales', 'sales\nid PK\nemployee_id FK\nproduct\namount\nsale_date')
+
+        # Tábla: customers
+        dot.node('customers', 'customers\nid PK\nname\ncountry\nindustry')
+
+        # Kapcsolatok
+        dot.edge('employees', 'departments', label='department_id')
+        dot.edge('sales', 'employees', label='employee_id')
+
+        st.subheader("📊 Database ER Diagram")
+        st.graphviz_chart(dot)
     st.sidebar.markdown("""
     **employees**  
     - id: integer, PK  
