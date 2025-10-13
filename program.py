@@ -10,7 +10,7 @@ TEACHER_PASSWORD = "sql2025"
 
 st.set_page_config(page_title="SQL Training App", layout="wide")
 
-st.title("🎓 Interactive SQL Training App")
+st.title("🎓 Interactive SQL Training App xddddd")
 st.write("Students: Enter your name, select a task type, complete the SQL task, and run your query. Results are logged automatically.")
 
 if "score" not in st.session_state:
@@ -98,7 +98,7 @@ if mode == "Student":
     # --- Sidebar: Detailed schema + ER Diagram ---
 
     task_type = st.sidebar.selectbox("Select task type:", ["SELECT basics", "WHERE filters", "ORDER BY", "GROUP BY"])
-    
+
     st.sidebar.header("Database Schema & Examples")
     if st.sidebar.button("Show ER Diagram"):
         dot = graphviz.Digraph(comment='Database Schema')
