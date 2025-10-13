@@ -96,6 +96,9 @@ if mode == "Student":
     conn.commit()
 
     # --- Sidebar: Detailed schema + ER Diagram ---
+
+    task_type = st.sidebar.selectbox("Select task type:", ["SELECT basics", "WHERE filters", "ORDER BY", "GROUP BY"])
+    
     st.sidebar.header("Database Schema & Examples")
     if st.sidebar.button("Show ER Diagram"):
         dot = graphviz.Digraph(comment='Database Schema')
@@ -108,7 +111,6 @@ if mode == "Student":
         st.subheader("📊 Database ER Diagram")
         st.graphviz_chart(dot)
 
-    task_type = st.sidebar.selectbox("Select task type:", ["SELECT basics", "WHERE filters", "ORDER BY", "GROUP BY"])
 
     st.sidebar.markdown("""
     **employees**  
