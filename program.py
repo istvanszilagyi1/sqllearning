@@ -6,16 +6,13 @@ from datetime import datetime
 import os
 import graphviz
 
-# --- CONFIG ---
 TEACHER_PASSWORD = "sql2025"
 
-# --- Page setup ---
 st.set_page_config(page_title="SQL Training App", layout="wide")
 
 st.title("🎓 Interactive SQL Training App")
 st.write("Students: Enter your name, select a task type, complete the SQL task, and run your query. Results are logged automatically.")
 
-# --- Session state ---
 if "score" not in st.session_state:
     st.session_state.score = 0
 if "name" not in st.session_state:
@@ -111,6 +108,8 @@ if mode == "Student":
         st.subheader("📊 Database ER Diagram")
         st.graphviz_chart(dot)
 
+    task_type = st.sidebar.selectbox("Select task type:", ["SELECT basics", "WHERE filters", "ORDER BY", "GROUP BY"])
+
     st.sidebar.markdown("""
     **employees**  
     - id: integer, PK  
@@ -137,8 +136,6 @@ if mode == "Student":
     - country: text  
     - industry: text  
     """)
-
-    task_type = st.sidebar.selectbox("Select task type:", ["SELECT basics", "WHERE filters", "ORDER BY", "GROUP BY"])
 
     # --- Tasks dictionary ---
     tasks = {
@@ -176,7 +173,7 @@ if mode == "Student":
     st.markdown(f"**SQL Tip:** {current_task['tip']}")
     st.markdown(f"**Task:** {current_task['task']}")
 
-    sql_query = st.text_area("Write your SQL query here:", value=current_task["expected"], height=150)
+    sql_query = st.text_area("Write your SQL query here:", height=150)
 
     # --- Run Query button ---
     if st.button("Run Query"):
