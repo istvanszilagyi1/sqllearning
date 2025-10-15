@@ -130,11 +130,7 @@ if mode == "Student":
 
     # --- Sidebar: Detailed schema + ER Diagram ---
 
-<<<<<<< HEAD
-    task_type = st.sidebar.selectbox("Select task type:", ["SELECT basics", "WHERE filters", "ORDER BY", "GROUP BY"], key="task_type_selector", on_change=reset_task_index)
-=======
-    task_type = st.sidebar.selectbox("Select task type:", ["SELECT basics", "WHERE filters", "ORDER BY", "GROUP BY", "HAVING"])
->>>>>>> ebfa94ffb8576647cb7fe77db6a66af1a4468471
+    task_type = st.sidebar.selectbox("Select task type:", ["SELECT basics", "WHERE filters", "ORDER BY", "GROUP BY", "HAVING"], key="task_type_selector", on_change=reset_task_index)
 
     st.sidebar.header("Database Schema & Examples")
     
@@ -477,6 +473,7 @@ if mode == "Student":
     if st.button("Next Task"):
         if st.session_state.task_index < len(tasks[task_type]) - 1:
             st.session_state.task_index += 1
+            st.rerun()
         else:
             st.info("No more tasks in this type. You can choose another type.")
 
