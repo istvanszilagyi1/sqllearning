@@ -137,6 +137,11 @@ if mode == "Student":
         on_click=toggle_er_diagram
     )
 
+    if st.session_state.show_er_diagram:
+        st.subheader("📊 Database ER Diagram")
+        st.graphviz_chart(create_er_diagram(), use_container_width=True)
+        st.divider()
+
 
     st.sidebar.markdown("""
     **employees**  
