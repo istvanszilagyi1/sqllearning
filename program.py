@@ -202,256 +202,252 @@ if mode == "Student":
         "SELECT basics": [
             {
                 "story": "🧑‍💻 You just started your internship at a software company. Your manager asks you to check the employee records in the system.",
-                "tip": "Use SELECT to view all columns from a table.",
-                "task": "List all columns from the employees table.",
+                "tip": "Use SELECT * to view all columns from a table.",
+                "task": "List all columns from the **employees** table.",
                 "expected": "SELECT * FROM employees;"
             },
             {
                 "story": "📋 The HR team wants to review only employee names and salaries.",
-                "tip": "You can specify which columns to select.",
-                "task": "List the name and salary of every employee.",
+                "tip": "Specify which columns you need.",
+                "task": "List the **name** and **salary** of every employee.",
                 "expected": "SELECT name, salary FROM employees;"
             },
             {
                 "story": "🏢 You’re preparing a summary for department managers.",
-                "tip": "Combine information from two tables using JOIN.",
-                "task": "List each employee’s name with their department’s name.",
-                "expected": "SELECT e.name, d.name AS department FROM employees e JOIN departments d ON e.department_id = d.id;"
+                "tip": "List all columns from the table to see the full data.",
+                "task": "List all columns from the **departments** table.",
+                "expected": "SELECT * FROM departments;"
             },
             {
                 "story": "💰 The finance intern wants to know everyone’s salary and hire date.",
-                "tip": "Use SELECT with multiple columns.",
-                "task": "Show all employees’ names, salaries, and hire dates.",
+                "tip": "SELECT multiple columns.",
+                "task": "Show all employees’ **name**, **salary**, and **hire_date**.",
                 "expected": "SELECT name, salary, hire_date FROM employees;"
             },
             {
                 "story": "🧾 Your supervisor wants to double-check the list of all departments.",
-                "tip": "SELECT can also be used on small tables like departments.",
-                "task": "Display all departments with their manager names.",
+                "tip": "Specify the columns you need from the departments table.",
+                "task": "Display all department **name** and their **manager**.",
                 "expected": "SELECT name, manager FROM departments;"
             },
             {
                 "story": "📦 The sales department needs a list of all products that were sold.",
-                "tip": "Use DISTINCT to avoid duplicates.",
-                "task": "Show the unique product names from the sales table.",
+                "tip": "Use DISTINCT to avoid duplicate product names.",
+                "task": "Show the unique **product** names from the **sales** table.",
                 "expected": "SELECT DISTINCT product FROM sales;"
             },
             {
                 "story": "🗓️ The HR system tracks hiring dates — you need to verify them.",
-                "tip": "You can rename columns using AS for clarity.",
-                "task": "Show each employee’s name and hire_date as 'Started On'.",
+                "tip": "You can rename the column using AS for clarity.",
+                "task": "Show each employee’s **name** and **hire_date** as 'Started On'.",
                 "expected": "SELECT name, hire_date AS 'Started On' FROM employees;"
             },
             {
-                "story": "🧠 Your team lead wants to see how the tables are related.",
-                "tip": "Try a simple JOIN to combine employees and departments.",
-                "task": "List employee names along with their manager names from departments.",
-                "expected": "SELECT e.name, d.manager FROM employees e JOIN departments d ON e.department_id = d.id;"
-            },
+                "story": "🕵️ The CEO wants a quick list of all employee IDs to cross-reference with another system.",
+                "tip": "Select the specific ID column.",
+                "task": "Show all employee **id** values.",
+                "expected": "SELECT id FROM employees;"
+            }
         ],
-
         "WHERE filters": [
             {
                 "story": "💼 Your manager asks: who earns more than 600,000 HUF?",
                 "tip": "Use WHERE with a numeric comparison.",
-                "task": "List employees whose salary is above 600,000.",
+                "task": "List all columns for employees whose **salary > 600000**.",
                 "expected": "SELECT * FROM employees WHERE salary > 600000;"
             },
             {
                 "story": "🧑‍💼 The IT manager only wants to see IT department employees.",
-                "tip": "Filter results by department_id or name.",
-                "task": "List all employees from the IT department.",
+                "tip": "Filter results by department_id.",
+                "task": "List all columns for employees from **department_id = 2**.",
                 "expected": "SELECT * FROM employees WHERE department_id = 2;"
             },
             {
-                "story": "📆 HR wants to see employees hired after 2020.",
+                "story": "📆 HR wants to see employees hired before 2022.",
                 "tip": "Use WHERE with a date condition.",
-                "task": "Show employees whose hire_date is after 2020-12-31.",
-                "expected": "SELECT * FROM employees WHERE hire_date > '2020-12-31';"
+                "task": "Show all columns for employees whose **hire_date < '2022-01-01'**.",
+                "expected": "SELECT * FROM employees WHERE hire_date < '2022-01-01';"
             },
             {
-                "story": "🎯 The marketing team wants to review salaries below 500,000.",
-                "tip": "Combine comparisons using WHERE.",
-                "task": "List employees with salaries less than 500,000.",
-                "expected": "SELECT * FROM employees WHERE salary < 500000;"
+                "story": "🎯 The marketing team wants to review sales where the amount was exactly 10,000.",
+                "tip": "Use the equality operator (=) on the sales table.",
+                "task": "List all columns for sales where **amount = 10000**.",
+                "expected": "SELECT * FROM sales WHERE amount = 10000;"
             },
             {
-                "story": "🌍 The sales intern wants to focus on Hungarian customers.",
-                "tip": "Use a WHERE condition on text columns.",
-                "task": "List all customers from Hungary.",
-                "expected": "SELECT * FROM customers WHERE country = 'Hungary';"
+                "story": "🌍 The sales intern wants to focus on customers *not* from France.",
+                "tip": "Filter results using the NOT EQUAL operator (!= or <>).",
+                "task": "List all columns from the **customers** table where **country != 'France'**.",
+                "expected": "SELECT * FROM customers WHERE country != 'France';"
             },
             {
-                "story": "🕵️ You’re auditing data and need to find employees named 'Anna Kovacs'.",
-                "tip": "Filter text values exactly.",
-                "task": "Find the row of employee Anna Kovacs.",
-                "expected": "SELECT * FROM employees WHERE name = 'Anna Kovacs';"
+                "story": "🕵️ The department head is looking for department 3, which is the 'Marketing' department.",
+                "tip": "Filter results by department ID.",
+                "task": "Find the row of department where **id = 3**.",
+                "expected": "SELECT * FROM departments WHERE id = 3;"
             },
             {
-                "story": "💸 Your manager suspects some salaries are between 400,000 and 600,000.",
-                "tip": "Use BETWEEN for range checks.",
-                "task": "List employees with salaries between 400,000 and 600,000.",
-                "expected": "SELECT * FROM employees WHERE salary BETWEEN 400000 AND 600000;"
+                "story": "💸 Your manager suspects some sales are between 5,000 and 20,000.",
+                "tip": "Use BETWEEN for range checks on the sales amount.",
+                "task": "List all columns for sales with **amount BETWEEN 5000 AND 20000**.",
+                "expected": "SELECT * FROM sales WHERE amount BETWEEN 5000 AND 20000;"
             },
             {
-                "story": "📧 HR wants to find all employees not in the HR department.",
-                "tip": "Use the NOT operator.",
-                "task": "List employees who are not in department 1 (HR).",
-                "expected": "SELECT * FROM employees WHERE department_id != 1;"
-            },
+                "story": "📧 HR needs to see employees who earn exactly 550,000.",
+                "tip": "Use the equality operator (=) on the salary column.",
+                "task": "List all columns for employees where **salary = 550000**.",
+                "expected": "SELECT * FROM employees WHERE salary = 550000;"
+            }
         ],
-
         "ORDER BY": [
             {
                 "story": "📅 The HR manager wants to see the newest employees first.",
-                "tip": "Use ORDER BY with DESC for descending order.",
-                "task": "List all employees ordered by hire_date descending.",
+                "tip": "Order by hire_date using DESC for the most recent first.",
+                "task": "List all columns for employees ordered by **hire_date** descending.",
                 "expected": "SELECT * FROM employees ORDER BY hire_date DESC;"
             },
             {
                 "story": "💵 The finance team wants to review employees from the lowest to highest salary.",
-                "tip": "Default ORDER BY sorts ascending.",
-                "task": "List employees ordered by salary ascending.",
+                "tip": "Default ORDER BY sorts ascending (ASC).",
+                "task": "List all columns for employees ordered by **salary** ascending.",
                 "expected": "SELECT * FROM employees ORDER BY salary ASC;"
             },
             {
-                "story": "🏷️ The IT director wants an alphabetical list of all departments.",
-                "tip": "ORDER BY also works on text columns.",
-                "task": "List all departments in alphabetical order.",
-                "expected": "SELECT * FROM departments ORDER BY name ASC;"
+                "story": "🏷️ The IT director wants a list of departments by their ID number, largest first.",
+                "tip": "Order by the department ID using DESC.",
+                "task": "List all columns for departments ordered by **id** descending.",
+                "expected": "SELECT * FROM departments ORDER BY id DESC;"
             },
             {
-                "story": "🧾 You’re making a sales dashboard showing the largest deals first.",
-                "tip": "Use ORDER BY amount DESC.",
-                "task": "List all sales ordered by amount descending.",
-                "expected": "SELECT * FROM sales ORDER BY amount DESC;"
+                "story": "🧾 You’re making a sales dashboard showing the smallest deals first.",
+                "tip": "Use ORDER BY amount ASC.",
+                "task": "List all columns for sales ordered by **amount** ascending.",
+                "expected": "SELECT * FROM sales ORDER BY amount ASC;"
             },
             {
-                "story": "📊 Marketing wants to see which sales happened most recently.",
-                "tip": "Sort by sale_date descending.",
-                "task": "Show all sales ordered by sale_date descending.",
-                "expected": "SELECT * FROM sales ORDER BY sale_date DESC;"
+                "story": "📊 Marketing wants to see which sales were registered by the lowest employee_id first.",
+                "tip": "Sort by the employee_id ascending.",
+                "task": "Show all columns for sales ordered by **employee_id** ascending.",
+                "expected": "SELECT * FROM sales ORDER BY employee_id ASC;"
             },
             {
                 "story": "📈 The HR manager only needs the top 3 earners.",
-                "tip": "Use ORDER BY with LIMIT.",
-                "task": "List the 3 highest-paid employees.",
+                "tip": "Use ORDER BY (DESC) with LIMIT.",
+                "task": "List all columns for the **3 highest-paid** employees (ordered by salary DESC).",
                 "expected": "SELECT * FROM employees ORDER BY salary DESC LIMIT 3;"
             },
             {
-                "story": "📉 The CEO wants to see the two lowest-paid employees.",
-                "tip": "ORDER BY ascending, then LIMIT.",
-                "task": "Show the 2 employees with the smallest salaries.",
-                "expected": "SELECT * FROM employees ORDER BY salary ASC LIMIT 2;"
+                "story": "📉 The CEO wants to see the two department managers who are listed last alphabetically.",
+                "tip": "Order by manager name DESC, then LIMIT 2.",
+                "task": "Show all columns for the **2 departments** whose **manager** name is alphabetically **last**.",
+                "expected": "SELECT * FROM departments ORDER BY manager DESC LIMIT 2;"
             },
             {
-                "story": "🗂️ HR wants to review the five earliest hires.",
-                "tip": "Order by hire_date ascending, limit the result.",
-                "task": "List the first 5 employees hired.",
-                "expected": "SELECT * FROM employees ORDER BY hire_date ASC LIMIT 5;"
-            },
+                "story": "🗂️ The sales team wants to see a list of their products from Z to A.",
+                "tip": "Order by product name descending.",
+                "task": "List all columns for sales ordered by **product** descending.",
+                "expected": "SELECT * FROM sales ORDER BY product DESC;"
+            }
         ],
-
         "GROUP BY": [
             {
                 "story": "🏢 The CEO wants to know how many employees work in each department.",
-                "tip": "Use COUNT() with GROUP BY.",
-                "task": "Count the number of employees per department.",
+                "tip": "Use COUNT(*) with GROUP BY.",
+                "task": "Show **department_id** and the **COUNT(\*)** of employees per department.",
                 "expected": "SELECT department_id, COUNT(*) FROM employees GROUP BY department_id;"
             },
             {
                 "story": "💸 The finance team wants to see the average salary per department.",
                 "tip": "Use AVG() to calculate averages.",
-                "task": "Show department_id and average salary for each department.",
+                "task": "Show **department_id** and **AVG(salary)** for each department.",
                 "expected": "SELECT department_id, AVG(salary) FROM employees GROUP BY department_id;"
             },
             {
                 "story": "🧾 Marketing wants to know total sales amounts per product.",
                 "tip": "Use SUM() with GROUP BY.",
-                "task": "List each product and the total sales amount.",
+                "task": "List each **product** and the **SUM(amount)** of its sales.",
                 "expected": "SELECT product, SUM(amount) FROM sales GROUP BY product;"
-            },
-            {
-                "story": "🧍‍♀️ HR wants to count how many people were hired each year.",
-                "tip": "Use strftime to extract the year from hire_date.",
-                "task": "Count employees grouped by year of hire_date.",
-                "expected": "SELECT strftime('%Y', hire_date) AS year, COUNT(*) FROM employees GROUP BY year;"
             },
             {
                 "story": "💼 Management wants to see the total salary budget per department.",
                 "tip": "Use SUM() with GROUP BY.",
-                "task": "Show department_id and total salary per department.",
+                "task": "Show **department_id** and **SUM(salary)** (total salary) per department.",
                 "expected": "SELECT department_id, SUM(salary) FROM employees GROUP BY department_id;"
             },
             {
                 "story": "📊 The IT team wants to check how many sales each employee made.",
                 "tip": "Group by employee_id in the sales table.",
-                "task": "Count sales per employee_id.",
+                "task": "Show **employee_id** and the **COUNT(\*)** of sales per employee.",
                 "expected": "SELECT employee_id, COUNT(*) FROM sales GROUP BY employee_id;"
             },
             {
                 "story": "🪙 The CEO asks for the average deal size per employee.",
                 "tip": "Use AVG(amount) grouped by employee_id.",
-                "task": "Show employee_id and their average sale amount.",
+                "task": "Show **employee_id** and their **AVG(amount)** (average sale amount).",
                 "expected": "SELECT employee_id, AVG(amount) FROM sales GROUP BY employee_id;"
             },
             {
-                "story": "🏷️ The HR manager wants to know how many managers each department has listed.",
+                "story": "🏷️ The HR manager wants to know which manager handles which departments.",
                 "tip": "Use COUNT() grouped by manager name.",
-                "task": "Count the number of departments for each manager.",
+                "task": "Show **manager** and the **COUNT(\*)** of departments they manage.",
                 "expected": "SELECT manager, COUNT(*) FROM departments GROUP BY manager;"
             },
+            {
+                "story": "💰 The finance team needs to know the highest salary in each department.",
+                "tip": "Use MAX() with GROUP BY.",
+                "task": "Show **department_id** and the **MAX(salary)** in that department.",
+                "expected": "SELECT department_id, MAX(salary) FROM employees GROUP BY department_id;"
+            }
         ],
-
         "HAVING": [
             {
                 "story": "💰 The CEO wants to see departments where the average salary is over 500,000.",
                 "tip": "Use HAVING to filter aggregated results.",
-                "task": "Show department_id and average salary where AVG(salary) > 500,000.",
+                "task": "Show **department_id** and **AVG(salary)** where AVG(salary) **> 500000**.",
                 "expected": "SELECT department_id, AVG(salary) FROM employees GROUP BY department_id HAVING AVG(salary) > 500000;"
             },
             {
                 "story": "📦 The sales director wants to see products that generated more than 15,000 total revenue.",
                 "tip": "Use HAVING with SUM().",
-                "task": "List product names where total sales exceed 15,000.",
+                "task": "Show **product** and **SUM(amount)** where SUM(amount) **> 15000**.",
                 "expected": "SELECT product, SUM(amount) FROM sales GROUP BY product HAVING SUM(amount) > 15000;"
             },
             {
                 "story": "🧾 HR wants departments that have more than one employee.",
                 "tip": "HAVING works after GROUP BY.",
-                "task": "Show department_id and COUNT(*) where more than one employee exists.",
+                "task": "Show **department_id** and **COUNT(\*)** where COUNT(\*) **> 1**.",
                 "expected": "SELECT department_id, COUNT(*) FROM employees GROUP BY department_id HAVING COUNT(*) > 1;"
             },
             {
                 "story": "📈 The CEO wants employees who have made more than one sale.",
                 "tip": "Group by employee_id, then filter with HAVING COUNT() > 1.",
-                "task": "List employee_id and number of sales where count > 1.",
+                "task": "Show **employee_id** and **COUNT(\*)** of sales where COUNT(\*) **> 1**.",
                 "expected": "SELECT employee_id, COUNT(*) FROM sales GROUP BY employee_id HAVING COUNT(*) > 1;"
-            },
-            {
-                "story": "🗓️ Management wants to find hire years with more than one hire.",
-                "tip": "Combine strftime and HAVING.",
-                "task": "List years with more than one employee hired.",
-                "expected": "SELECT strftime('%Y', hire_date) AS year, COUNT(*) FROM employees GROUP BY year HAVING COUNT(*) > 1;"
             },
             {
                 "story": "💸 The finance team only wants to see departments whose total salary is at least 1,000,000.",
                 "tip": "Use SUM() and HAVING together.",
-                "task": "List department_id and total salary where total ≥ 1,000,000.",
+                "task": "Show **department_id** and **SUM(salary)** where SUM(salary) **>= 1000000**.",
                 "expected": "SELECT department_id, SUM(salary) FROM employees GROUP BY department_id HAVING SUM(salary) >= 1000000;"
             },
             {
                 "story": "🎯 The marketing team only cares about employees who have average sales above 12,000.",
                 "tip": "Use AVG() in HAVING.",
-                "task": "Show employee_id with average sale amount > 12,000.",
+                "task": "Show **employee_id** and **AVG(amount)** where AVG(amount) **> 12000**.",
                 "expected": "SELECT employee_id, AVG(amount) FROM sales GROUP BY employee_id HAVING AVG(amount) > 12000;"
             },
             {
                 "story": "🏢 HR wants to find managers who manage more than one department.",
                 "tip": "Use GROUP BY manager and HAVING COUNT()>1.",
-                "task": "Show managers who manage multiple departments.",
+                "task": "Show **manager** and **COUNT(\*)** of departments where COUNT(\*) **> 1**.",
                 "expected": "SELECT manager, COUNT(*) FROM departments GROUP BY manager HAVING COUNT(*) > 1;"
             },
+            {
+                "story": "📉 The finance team needs departments where the minimum salary is below 400,000.",
+                "tip": "Use MIN() and HAVING.",
+                "task": "Show **department_id** and **MIN(salary)** where MIN(salary) **< 400000**.",
+                "expected": "SELECT department_id, MIN(salary) FROM employees GROUP BY department_id HAVING MIN(salary) < 400000;"
+            }
         ]
     }
 
@@ -462,8 +458,26 @@ if mode == "Student":
 
     st.subheader(f"🧠 {task_type} Task")
     st.markdown(f"**Story:** {current_task['story']}")
-    st.markdown(f"**SQL Tip:** {current_task['tip']}")
+    #st.markdown(f"**SQL Tip:** {current_task['tip']}")
     st.markdown(f"**Task:** {current_task['task']}")
+
+    hint_key = f"hint_visible_{task_type}_{safe_index}"
+    st.session_state.setdefault(hint_key, False)
+    
+    def toggle_hint(key):
+        st.session_state[key] = not st.session_state[key]
+
+    task_col, hint_col = st.columns([0.8, 0.2])
+    
+    with task_col:
+        st.markdown(f"**Task:** {current_task['task']}")
+    
+    with hint_col:
+        if st.button("💡 Hint", key=f"hint_btn_{hint_key}"):
+            toggle_hint(hint_key)
+
+    if st.session_state[hint_key]:
+        st.info(f"**EASY VERSION:** {current_task['tip']}")
 
     sql_query = st.text_area("Write your SQL query here:", height=150)
 
