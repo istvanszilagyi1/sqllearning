@@ -421,6 +421,8 @@ if mode == "Learner":
     st.markdown(f"**Story:** {current_task['story']}")
     st.markdown(f"**Task:** {current_task['task']}")
 
+    sql_query = st.text_area("Write your SQL query here:", height=150)
+
     # --- Run Query button ---
     if st.button("Run Query"):
         try:
