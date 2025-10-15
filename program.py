@@ -79,10 +79,10 @@ def create_er_diagram():
     return dot
 
 # --- Mode selection ---
-mode = st.sidebar.radio("Mode", ["Student", "Teacher"])
+mode = st.sidebar.radio("Mode", ["Learner", "Instructor"])
 
 # ==================== STUDENT MODE ====================
-if mode == "Student":
+if mode == "Learner":
 
     name = st.text_input("Your name:", st.session_state.name)
     if name:
