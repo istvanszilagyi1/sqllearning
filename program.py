@@ -465,7 +465,7 @@ if mode == "Student":
     st.markdown(f"**SQL Tip:** {current_task['tip']}")
     st.markdown(f"**Task:** {current_task['task']}")
 
-    sql_query = st.text_area("Write your SQL query here:", height=150)
+    sql_query = st.text_area("Write your SQL query here:", key="sql_query", height=150)
 
     # --- Run Query button ---
     if st.button("Run Query"):
