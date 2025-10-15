@@ -456,11 +456,6 @@ if mode == "Learner":
     safe_index = min(st.session_state.task_index, len(tasks_list) - 1)
     current_task = tasks_list[safe_index]
 
-    st.subheader(f"🧠 {task_type} Task")
-    st.markdown(f"**Story:** {current_task['story']}")
-    #st.markdown(f"**SQL Tip:** {current_task['tip']}")
-    st.markdown(f"**Task:** {current_task['task']}")
-
     hint_key = f"hint_visible_{task_type}_{safe_index}"
     st.session_state.setdefault(hint_key, False)
     
@@ -470,6 +465,8 @@ if mode == "Learner":
     task_col, hint_col = st.columns([0.8, 0.2])
     
     with task_col:
+        st.subheader(f"🧠 {task_type} Task")
+        st.markdown(f"**Story:** {current_task['story']}")
         st.markdown(f"**Task:** {current_task['task']}")
     
     with hint_col:
@@ -526,9 +523,9 @@ if mode == "Learner":
     st.divider()
     st.subheader(f"🏅 Current Score for {st.session_state.name}: {st.session_state.score}")
 
-# ==================== TEACHER MODE ====================
+# ==================== Instructor MODE ====================
 else:
-    st.subheader("🔐 Teacher Dashboard")
+    st.subheader("🔐 Instructor Dashboard")
     password = st.text_input("Enter teacher password:", type="password")
 
     if password == TEACHER_PASSWORD:
