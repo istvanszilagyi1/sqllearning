@@ -20,6 +20,39 @@ if "name" not in st.session_state:
 if "task_index" not in st.session_state:
     st.session_state.task_index = 0
 
+def reset_task_index():
+    st.session_state.task_index = 0
+
+def toggle_er_diagram():
+    """Toggles the visibility state of the ER Diagram."""
+    st.session_state.show_er_diagram = not st.session_state.show_er_diagram
+
+def create_er_diagram():
+    """Generates the Graphviz diagram with improved styling and record shapes."""
+    dot = graphviz.Digraph(
+        comment='Database Schema',
+        # Graph styling
+        graph_attr={'rankdir': 'LR', 'bgcolor': '#f0f2f6', 'fontname': 'Inter', 'splines': 'ortho'},
+        # Node styling
+        node_attr={'shape': 'record', 'style': 'filled', 'fillcolor': '#ffffff', 'fontname': 'Inter', 'color': '#1f77b4'},
+        # Edge styling
+        edge_attr={'fontname': 'Inter', 'color': '#555555', 'arrowhead': 'crow'}
+    )
+
+    # Nodes (Tables) using the 'record' shape for detailed structure
+    dot.node('employees', '{employees | id PK | name | department_id FK | salary | hire_date}')
+    dot.node('departments', '{departments | id PK | name | manager}')
+    dot.node('sales', '{sales | id PK | employee_id FK | product | amount | sale_date}')
+    dot.node('customers', '{customers | id PK | name | country | industry}')
+
+    # Edges (Relationships)
+    # Departments (1) -> Employees (N)
+    dot.edge('departments', 'employees', label='1:N (department_id)')
+    # Employees (1) -> Sales (N)
+    dot.edge('employees', 'sales', label='1:N (employee_id)')
+
+    return dot
+
 # --- Mode selection ---
 mode = st.sidebar.radio("Mode", ["Student", "Teacher"])
 
@@ -97,19 +130,14 @@ if mode == "Student":
 
     # --- Sidebar: Detailed schema + ER Diagram ---
 
-    task_type = st.sidebar.selectbox("Select task type:", ["SELECT basics", "WHERE filters", "ORDER BY", "GROUP BY"])
+    task_type = st.sidebar.selectbox("Select task type:", ["SELECT basics", "WHERE filters", "ORDER BY", "GROUP BY"], key="task_type_selector", on_change=reset_task_index)
 
     st.sidebar.header("Database Schema & Examples")
-    if st.sidebar.button("Show ER Diagram"):
-        dot = graphviz.Digraph(comment='Database Schema')
-        dot.node('employees', 'employees\nid PK\nname\ndepartment_id FK\nsalary\nhire_date')
-        dot.node('departments', 'departments\nid PK\nname\nmanager')
-        dot.node('sales', 'sales\nid PK\nemployee_id FK\nproduct\namount\nsale_date')
-        dot.node('customers', 'customers\nid PK\nname\ncountry\nindustry')
-        dot.edge('employees', 'departments', label='department_id')
-        dot.edge('sales', 'employees', label='employee_id')
-        st.subheader("📊 Database ER Diagram")
-        st.graphviz_chart(dot)
+    
+    st.sidebar.button(
+        f"{'Hide' if st.session_state.show_er_diagram else 'Show'} ER Diagram", 
+        on_click=toggle_er_diagram
+    )
 
 
     st.sidebar.markdown("""
@@ -168,7 +196,9 @@ if mode == "Student":
     }
 
     # --- Show current task ---
-    current_task = tasks[task_type][st.session_state.task_index]
+    tasks_list = tasks.get(task_type, [])
+    safe_index = min(st.session_state.task_index, len(tasks_list) - 1)
+    current_task = tasks_list[safe_index]
 
     st.subheader(f"🧠 {task_type} Task")
     st.markdown(f"**Story:** {current_task['story']}")
