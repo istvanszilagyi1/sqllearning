@@ -22,15 +22,12 @@ def reset_task_index():
     st.session_state.task_index = 0
 
 def toggle_er_diagram():
-    """Toggles the visibility state of the ER Diagram."""
     st.session_state.show_er_diagram = not st.session_state.show_er_diagram
 
 def create_er_diagram():
-    """Generates the Graphviz diagram with improved styling, using HTML-like labels to make tables look like tables."""
-    
     def create_table_label(name, fields):
         html_content = f'''<
-<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6" BGCOLOR="#ffffff" COLOR="#1f77b4" >
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6" BGCOLOR="#ffffff" COLOR="#1f77b4" >
     <TR><TD COLSPAN="1" BGCOLOR="#1f77b4" ALIGN="LEFT"><FONT COLOR="#ffffff" POINT-SIZE="14"><B>{name}</B></FONT></TD></TR>'''
 
         for field in fields:
@@ -505,7 +502,7 @@ if mode == "Student":
     if st.button("Next Task"):
         if st.session_state.task_index < len(tasks[task_type]) - 1:
             st.session_state.task_index += 1
-            st.session_state.sql_query_input = ""
+            st.session_state.sql_query = ""
             st.rerun()
         else:
             st.info("No more tasks in this type. You can choose another type.")
