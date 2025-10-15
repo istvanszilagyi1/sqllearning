@@ -476,6 +476,7 @@ if mode == "Student":
     if st.button("Next Task"):
         if st.session_state.task_index < len(tasks[task_type]) - 1:
             st.session_state.task_index += 1
+            st.session_state.sql_query_input = ""
             st.rerun()
         else:
             st.info("No more tasks in this type. You can choose another type.")
