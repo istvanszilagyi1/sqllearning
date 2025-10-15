@@ -465,7 +465,7 @@ if mode == "Student":
     st.markdown(f"**SQL Tip:** {current_task['tip']}")
     st.markdown(f"**Task:** {current_task['task']}")
 
-    sql_query = st.text_area("Write your SQL query here:", key="sql_input", height=150)
+    sql_query = st.text_area("Write your SQL query here:", height=150)
 
     # --- Run Query button ---
     if st.button("Run Query"):
@@ -504,7 +504,7 @@ if mode == "Student":
         if st.session_state.task_index < len(tasks[task_type]) - 1:
             st.session_state.task_index += 1
             time.sleep(0.5)
-            st.session_state["sql_input"] = ""
+            st.session_state["sql_query"] = ""
             st.rerun()
         else:
             st.info("No more tasks in this type. You can choose another type.")
