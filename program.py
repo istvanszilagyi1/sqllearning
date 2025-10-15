@@ -462,7 +462,7 @@ if mode == "Learner":
     st.markdown(f"**Task:** {current_task['task']}")
 
     with st.expander("💡 Hint"):
-        st.info(f"**Help:** {current_task['tip']}")
+        st.info(f"{current_task['tip']}")
     sql_query = st.text_area("Write your SQL query here:", height=150)
 
     # --- Run Query button ---
