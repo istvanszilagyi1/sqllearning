@@ -13,12 +13,10 @@ st.set_page_config(page_title="SQL Training App", layout="wide")
 st.title("🎓 Interactive SQL Training App")
 st.write("Students: Enter your name, select a task type, complete the SQL task, and run your query. Results are logged automatically.")
 
-if "score" not in st.session_state:
-    st.session_state.score = 0
-if "name" not in st.session_state:
-    st.session_state.name = ""
-if "task_index" not in st.session_state:
-    st.session_state.task_index = 0
+st.session_state.setdefault("score", 0)
+st.session_state.setdefault("name", "")
+st.session_state.setdefault("task_index", 0)
+st.session_state.setdefault("show_er_diagram", False)
 
 def reset_task_index():
     st.session_state.task_index = 0
