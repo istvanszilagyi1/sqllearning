@@ -462,7 +462,7 @@ if mode == "Learner":
     def toggle_hint(key):
         st.session_state[key] = not st.session_state[key]
 
-    task_col, hint_col = st.columns([0.8, 0.2])
+    task_col, hint_col = st.columns([0.8, 0.8])
     
     with task_col:
         st.subheader(f"🧠 {task_type} Task")
