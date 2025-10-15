@@ -26,28 +26,57 @@ def toggle_er_diagram():
     st.session_state.show_er_diagram = not st.session_state.show_er_diagram
 
 def create_er_diagram():
-    """Generates the Graphviz diagram with improved styling and record shapes."""
+    """Generates the Graphviz diagram with improved styling, using HTML-like labels to make tables look like tables."""
+    
+    def create_table_label(name, fields):
+        html_content = f'''<
+<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6" BGCOLOR="#ffffff" COLOR="#1f77b4" >
+    <TR><TD COLSPAN="1" BGCOLOR="#1f77b4" ALIGN="LEFT"><FONT COLOR="#ffffff" POINT-SIZE="14"><B>{name}</B></FONT></TD></TR>'''
+
+        for field in fields:
+            formatted_field = field.replace('PK', '<B>PK</B>').replace('FK', '<B>FK</B>')
+            html_content += f'''<TR><TD ALIGN="LEFT"><FONT POINT-SIZE="10">{formatted_field}</FONT></TD></TR>'''
+            
+        html_content += '</TABLE>>'
+        return html_content
+
     dot = graphviz.Digraph(
         comment='Database Schema',
-        # Graph styling
-        graph_attr={'rankdir': 'LR', 'bgcolor': '#f0f2f6', 'fontname': 'Inter', 'splines': 'ortho'},
+        graph_attr={
+            'rankdir': 'LR', 
+            'bgcolor': '#f0f2f6', 
+            'fontname': 'Inter', 
+            'splines': 'ortho'
+        },
         # Node styling
-        node_attr={'shape': 'record', 'style': 'filled', 'fillcolor': '#ffffff', 'fontname': 'Inter', 'color': '#1f77b4'},
-        # Edge styling
-        edge_attr={'fontname': 'Inter', 'color': '#555555', 'arrowhead': 'crow'}
+        node_attr={
+            'shape': 'plaintext',
+            'fontname': 'Inter'
+        },
+        edge_attr={
+            'fontname': 'Inter', 
+            'color': '#555555', 
+            'arrowhead': 'crow',
+            'arrowtail': 'none',
+            'dir': 'forward'
+        }
     )
 
-    # Nodes (Tables) using the 'record' shape for detailed structure
-    dot.node('employees', '{employees | id PK | name | department_id FK | salary | hire_date}')
-    dot.node('departments', '{departments | id PK | name | manager}')
-    dot.node('sales', '{sales | id PK | employee_id FK | product | amount | sale_date}')
-    dot.node('customers', '{customers | id PK | name | country | industry}')
+    
+    employees_fields = ['id PK', 'name', 'department_id FK', 'salary', 'hire_date']
+    departments_fields = ['id PK', 'name', 'manager']
+    sales_fields = ['id PK', 'employee_id FK', 'product', 'amount', 'sale_date']
+    customers_fields = ['id PK', 'name', 'country', 'industry']
+    
+    dot.node('employees', label=create_table_label('employees', employees_fields))
+    dot.node('departments', label=create_table_label('departments', departments_fields))
+    dot.node('sales', label=create_table_label('sales', sales_fields))
+    dot.node('customers', label=create_table_label('customers', customers_fields))
 
-    # Edges (Relationships)
-    # Departments (1) -> Employees (N)
-    dot.edge('departments', 'employees', label='1:N (department_id)')
-    # Employees (1) -> Sales (N)
-    dot.edge('employees', 'sales', label='1:N (employee_id)')
+    
+    dot.edge('departments', 'employees', label='1:N (department_id)', tailport='e', headport='w')
+    
+    dot.edge('employees', 'sales', label='1:N (employee_id)', tailport='e', headport='w')
 
     return dot
 
