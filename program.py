@@ -456,26 +456,12 @@ if mode == "Learner":
     safe_index = min(st.session_state.task_index, len(tasks_list) - 1)
     current_task = tasks_list[safe_index]
 
-    hint_key = f"hint_visible_{task_type}_{safe_index}"
-    st.session_state.setdefault(hint_key, False)
-    
-    def toggle_hint(key):
-        st.session_state[key] = not st.session_state[key]
+    st.subheader(f"🧠 {task_type} Task")
+    st.markdown(f"**Story:** {current_task['story']}")
+    st.markdown(f"**Task:** {current_task['task']}")
 
-    task_col, hint_col = st.columns([0.8, 0.8])
-    
-    with task_col:
-        st.subheader(f"🧠 {task_type} Task")
-        st.markdown(f"**Story:** {current_task['story']}")
-        st.markdown(f"**Task:** {current_task['task']}")
-    
-    with hint_col:
-        if st.button("💡 Hint", key=f"hint_btn_{hint_key}"):
-            toggle_hint(hint_key)
-
-    if st.session_state[hint_key]:
+    with st.expander("💡 Click for a simplified version of the task (Hint)"):
         st.info(f"**EASY VERSION:** {current_task['tip']}")
-
     sql_query = st.text_area("Write your SQL query here:", height=150)
 
     # --- Run Query button ---
