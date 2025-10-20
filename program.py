@@ -143,7 +143,12 @@ if mode == "Learner":
     ])
     cursor.executemany("INSERT INTO customers (name, country, industry) VALUES (?, ?, ?)", [
         ("Acme Corp", "Hungary", "IT"),
-        ("Beta Ltd", "Germany", "Marketing")
+        ("Beta Ltd", "Germany", "Marketing"),
+        ("Global Finance Inc.", "USA", "Finance"),
+        ("Retail Solutions SA", "France", "Retail"),
+        ("Manufacturing PLC", "Hungary", "Manufacturing"),
+        ("Danube Healthcare", "Hungary", "Healthcare"),
+        ("Tech Innovators SL", "Spain", "IT")
     ])
     conn.commit()
 
@@ -282,7 +287,7 @@ if mode == "Learner":
             },
             {
                 "story": "💸 Your manager suspects some sales are between 5,000 and 20,000.",
-                "task": "List all columns for sales with **amount is between 5,000 and 20,000** (inclusive).",
+                "task": "List all columns for sales with **amount is between 5,000 and 20,000** - use BETWEEN lower_number AND higher_number.",
                 "expected": "SELECT * FROM sales WHERE amount BETWEEN 5000 AND 20000;"
             },
             {
@@ -336,6 +341,16 @@ if mode == "Learner":
                 "story": "🗂️ The sales team wants to see a list of their products from Z to A.",
                 "task": "List the **product** and **sale_date** for sales ordered by **product** descending.",
                 "expected": "SELECT product, sale_date FROM sales ORDER BY product DESC;"
+            },
+            {
+                "story": "🏅 The Sales Director wants to see the **single customer** whose name appears first alphabetically, specifically among those from **Hungary**.",
+                "task": "List the customer **name** and **country** from the **customers** table, showing only the **first record** when ordered by **name ascending** and filtered where **country is 'Hungary'**.",
+                "expected": "SELECT name, country FROM customers WHERE country = 'Hungary' ORDER BY name ASC LIMIT 1;"
+            },
+            {
+                "story": "🏛️ The finance team needs a quick list of the **top 5 accounts** in the **'IT' industry** to prioritize audits.",
+                "task": "List the **name** and **industry** for the **top 5 customers** in the **'IT' industry**, ordered by **name descending**.",
+                "expected": "SELECT name, industry FROM customers WHERE industry = 'IT' ORDER BY name DESC LIMIT 5;"
             }
         ],
         "GROUP BY": [
@@ -378,48 +393,68 @@ if mode == "Learner":
                 "story": "💰 The finance team needs to know the highest salary in each department.",
                 "task": "Show **department_id** and the **highest salary** in that department.",
                 "expected": "SELECT department_id, MAX(salary) FROM employees GROUP BY department_id;"
+            },
+            {
+                "story": "📊 The analyst needs to understand the distribution of clients, but is only interested in those located in **Germany**.",
+                "task": "Show the **country** and the **total count of customers** from that country, but only for customers where **country is 'Germany'**.",
+                "expected": "SELECT country, COUNT(*) FROM customers WHERE country = 'Germany' GROUP BY country;"
+            },
+            {
+                "story": "💼 Management wants a report showing which industries have a substantial presence in the customer base, focusing only on industries with **more than 2 customers**.",
+                "task": "List the **industry** and the **number of customers** in that industry, but only for industries that have **more than 2 customers**.",
+                "expected": "SELECT industry, COUNT(*) FROM customers GROUP BY industry HAVING COUNT(*) > 2;"
             }
         ],
         "HAVING": [
             {
-                "story": "💰 The CEO wants to see departments where the average salary is over 500,000.",
-                "task": "Show **department_id** and the **average salary** for departments where the average salary is **> 500000**.",
+                "story": "💰 The CEO wants to see departments where the average salary is **above** 500,000.",
+                "task": "Show **department_id** and the **average salary** for departments where the average salary is **greater than 500,000**.",
                 "expected": "SELECT department_id, AVG(salary) FROM employees GROUP BY department_id HAVING AVG(salary) > 500000;"
             },
             {
-                "story": "📦 The sales director wants to see products that generated more than 15,000 total revenue.",
-                "task": "Show **product** and the **total revenue** for products where the total revenue is **> 15000**.",
+                "story": "📦 The sales director wants to see products that generated **more than 15,000 total revenue**.",
+                "task": "Show **product** and the **total revenue** for products where the total revenue **exceeds 15,000**.",
                 "expected": "SELECT product, SUM(amount) FROM sales GROUP BY product HAVING SUM(amount) > 15000;"
             },
             {
-                "story": "🧾 HR wants departments that have more than one employee.",
-                "task": "Show **department_id** and the **total number of employees** for departments that have more than **1** employee.",
+                "story": "🧾 HR wants departments that **have more than one employee**.",
+                "task": "Show **department_id** and the **total number of employees** for departments that **contain more than one** person.",
                 "expected": "SELECT department_id, COUNT(*) FROM employees GROUP BY department_id HAVING COUNT(*) > 1;"
             },
             {
-                "story": "📈 The CEO wants employees who have made more than one sale.",
-                "task": "Show **employee_id** and the **total number of sales** for employees who have made more than **1** sale.",
+                "story": "📈 The CEO wants employees who have **made more than one sale**.",
+                "task": "Show **employee_id** and the **total number of sales** for employees who have a **sales count higher than 1**.",
                 "expected": "SELECT employee_id, COUNT(*) FROM sales GROUP BY employee_id HAVING COUNT(*) > 1;"
             },
             {
-                "story": "💸 The finance team only wants to see departments whose total salary is at least 1,000,000.",
-                "task": "Show **department_id** and the **total salary budget** for departments where the total salary budget is **>= 1000000**.",
+                "story": "💸 The finance team only wants to see departments whose **total salary is at least 1,000,000**.",
+                "task": "Show **department_id** and the **total salary budget** for departments where the total salary budget is **equal to or above 1,000,000**.",
                 "expected": "SELECT department_id, SUM(salary) FROM employees GROUP BY department_id HAVING SUM(salary) >= 1000000;"
             },
             {
-                "story": "🎯 The marketing team only cares about employees who have average sales above 12,000.",
-                "task": "Show **employee_id** and their **average sale amount** for employees whose average sale amount is **> 12000**.",
+                "story": "🎯 The marketing team only cares about employees who have **average sales above 12,000**.",
+                "task": "Show **employee_id** and their **average sale amount** for employees whose average sale amount is **greater than 12,000**.",
                 "expected": "SELECT employee_id, AVG(amount) FROM sales GROUP BY employee_id HAVING AVG(amount) > 12000;"
             },
             {
-                "story": "🏢 HR wants to find managers who manage more than one department.",
-                "task": "Show the **manager** name and the **number of departments** they manage where the number of departments is **> 1**.",
+                "story": "🏢 HR wants to find managers who **oversee multiple departments**.",
+                "task": "Show the **manager** name and the **number of departments** they manage where the number of departments is **greater than 1**.",
                 "expected": "SELECT manager, COUNT(*) FROM departments GROUP BY manager HAVING COUNT(*) > 1;"
             },
             {
-                "story": "📉 The finance team needs departments where the minimum salary is below 400,000.",
-                "task": "Show **department_id** and the **minimum salary** for departments where the minimum salary is **< 400000**.",
+                "story": "📉 The finance team needs departments where the **minimum salary is below 400,000**.",
+                "task": "Show **department_id** and the **minimum salary** for departments where the minimum salary is **less than 400,000**.",
                 "expected": "SELECT department_id, MIN(salary) FROM employees GROUP BY department_id HAVING MIN(salary) < 400000;"
+            },
+            {
+                "story": "🌎 The International Sales team needs to prioritize communication with countries that have a **small customer base**.",
+                "task": "Show the **country** and the **number of customers** from that country, but only for countries that have **fewer than 5 customers**.",
+                "expected": "SELECT country, COUNT(*) FROM customers GROUP BY country HAVING COUNT(*) < 5;"
+            },
+            {
+                "story": "🏭 The CEO is concerned about **over-reliance on any single industry** and wants to identify any industry that has **exactly 2 customers**.",
+                "task": "List the **industry** and the **total customer count** for industries that have an **exact customer count of 2**.",
+                "expected": "SELECT industry, COUNT(*) FROM customers GROUP BY industry HAVING COUNT(*) = 2;"
             }
         ]
     }
@@ -464,6 +499,15 @@ if mode == "Learner":
 
         except Exception as e:
             st.error(f"⚠️ Error: {e}")
+        
+    if st.button("Previous Task"):
+        if st.session_state.task_index > 0:
+            st.session_state.task_index -= 1
+            time.sleep(0.5)
+            st.session_state.sql_input = ""
+            st.rerun()
+        else:
+            st.info("You are already viewing the first task.")
 
     if st.button("Next Task"):
         if st.session_state.task_index < len(tasks[task_type]) - 1:
