@@ -46,7 +46,6 @@ def create_er_diagram():
             'fontname': 'Inter', 
             'splines': 'ortho'
         },
-        # Node styling
         node_attr={
             'shape': 'plaintext',
             'fontname': 'Inter'
@@ -78,10 +77,8 @@ def create_er_diagram():
 
     return dot
 
-# --- Mode selection ---
 mode = st.sidebar.radio("Mode", ["Learner", "Instructor"])
 
-# ==================== STUDENT MODE ====================
 if mode == "Learner":
 
     name = st.text_input("Your name:", st.session_state.name)
@@ -90,11 +87,9 @@ if mode == "Learner":
 
     st.divider()
 
-    # --- Create in-memory SQLite database ---
     conn = sqlite3.connect(":memory:")
     cursor = conn.cursor()
 
-    # --- Create tables ---
     cursor.execute("""
     CREATE TABLE employees (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -129,7 +124,6 @@ if mode == "Learner":
     )
     """)
 
-    # --- Insert sample data ---
     cursor.executemany("INSERT INTO departments (name, manager) VALUES (?, ?)", [
         ("HR", "Anna Kovacs"),
         ("IT", "Peter Nagy"),
@@ -153,7 +147,6 @@ if mode == "Learner":
     ])
     conn.commit()
 
-    # --- Sidebar: Detailed schema + ER Diagram ---
 
     task_type = st.sidebar.selectbox("Select task type:", ["SELECT basics", "WHERE filters", "ORDER BY", "GROUP BY", "HAVING"], key="task_type_selector", on_change=reset_task_index)
 
@@ -197,7 +190,6 @@ if mode == "Learner":
     - industry: text  
     """)
 
-    # --- Tasks dictionary ---
 
     tasks = {
         "SELECT basics": [
@@ -222,6 +214,11 @@ if mode == "Learner":
                 "expected": "SELECT name, salary, hire_date FROM employees;"
             },
             {
+                "story": "🌍 Management wants to analyze the customer base by geographic location and business sector.",
+                "task": "List the **country** and **industry** for every record in the **customers** table.",
+                "expected": "SELECT country, industry FROM customers;"
+            },
+            {
                 "story": "🧾 Your supervisor wants to double-check the list of all departments.",
                 "task": "Display all department **name** and their **manager**.",
                 "expected": "SELECT name, manager FROM departments;"
@@ -240,48 +237,63 @@ if mode == "Learner":
                 "story": "🕵️ The CEO wants a quick list of all employee IDs to cross-reference with another system.",
                 "task": "Show all employee **id** values.",
                 "expected": "SELECT id FROM employees;"
+            },
+            {
+                "story": "📞 The Sales team needs to quickly review who the primary clients are before making a call.",
+                "task": "Retrieve the **name** of every customer from the **customers** table.",
+                "expected": "SELECT name FROM customers;"
             }
         ],
         "WHERE filters": [
             {
                 "story": "💼 Your manager asks: who earns more than 600,000 HUF?",
-                "task": "List all columns for employees whose **salary > 600000**.",
+                "task": "List all columns for employees whose **salary is higher than 600,000**.",
                 "expected": "SELECT * FROM employees WHERE salary > 600000;"
             },
             {
                 "story": "🧑‍💼 The IT manager only wants to see IT department employees.",
-                "task": "List all columns for employees from **department_id = 2**.",
+                "task": "List all columns for employees where **department_id equals 2**.",
                 "expected": "SELECT * FROM employees WHERE department_id = 2;"
             },
             {
                 "story": "📆 HR wants to see employees hired before 2022.",
-                "task": "Show all columns for employees whose **hire_date < '2022-01-01'**.",
+                "task": "Show all columns for employees whose **hire_date is before January 1, 2022**.",
                 "expected": "SELECT * FROM employees WHERE hire_date < '2022-01-01';"
             },
             {
                 "story": "🎯 The marketing team wants to review sales where the amount was exactly 10,000.",
-                "task": "List all columns for sales where **amount = 10000**.",
+                "task": "List all columns for sales where **amount is exactly 10,000**.",
                 "expected": "SELECT * FROM sales WHERE amount = 10000;"
             },
             {
+                "story": "🔎 The marketing team needs to identify customers whose names start with the letter 'A'.",
+                "task": "List the **name** of customers where the name **starts with 'A'**.",
+                "expected": "SELECT name FROM customers WHERE name LIKE 'A%';"
+            },
+            {
                 "story": "🌍 The sales intern wants to focus on customers *not* from France.",
-                "task": "List the customer **name** and **country** from the **customers** table where **country != 'France'**.",
+                "task": "List the customer **name** and **country** from the **customers** table where the **country is not 'France'**.",
                 "expected": "SELECT name, country FROM customers WHERE country != 'France';"
             },
             {
                 "story": "🕵️ The department head is looking for department 3, which is the 'Marketing' department.",
-                "task": "Find the **name** and **manager** of the department where **id = 3**.",
+                "task": "Find the **name** and **manager** of the department where **id is 3**.",
                 "expected": "SELECT name, manager FROM departments WHERE id = 3;"
             },
             {
                 "story": "💸 Your manager suspects some sales are between 5,000 and 20,000.",
-                "task": "List all columns for sales with **amount BETWEEN 5000 AND 20000**.",
+                "task": "List all columns for sales with **amount is between 5,000 and 20,000** (inclusive).",
                 "expected": "SELECT * FROM sales WHERE amount BETWEEN 5000 AND 20000;"
             },
             {
                 "story": "📧 HR needs to see employees who earn exactly 550,000.",
-                "task": "List the **name**, **salary**, and **department_id** for employees where **salary = 550000**.",
+                "task": "List the **name**, **salary**, and **department_id** for employees where **salary equals 550,000**.",
                 "expected": "SELECT name, salary, department_id FROM employees WHERE salary = 550000;"
+            },
+            {
+                "story": "🔗 You are looking for a specific employee but only remember that their name contains the sequence 'an'.",
+                "task": "List the **name** and **email** of employees whose name **contains 'an'** anywhere.",
+                "expected": "SELECT name, email FROM employees WHERE name LIKE '%an%';"
             }
         ],
         "ORDER BY": [
@@ -412,7 +424,6 @@ if mode == "Learner":
         ]
     }
 
-    # --- Show current task ---
     tasks_list = tasks.get(task_type, [])
     safe_index = min(st.session_state.task_index, len(tasks_list) - 1)
     current_task = tasks_list[safe_index]
@@ -423,7 +434,6 @@ if mode == "Learner":
 
     sql_query = st.text_area("Write your SQL query here:", height=150)
 
-    # --- Run Query button ---
     if st.button("Run Query"):
         try:
             df = pd.read_sql_query(sql_query, conn)
@@ -455,7 +465,6 @@ if mode == "Learner":
         except Exception as e:
             st.error(f"⚠️ Error: {e}")
 
-    # --- Next task button ---
     if st.button("Next Task"):
         if st.session_state.task_index < len(tasks[task_type]) - 1:
             st.session_state.task_index += 1
@@ -468,7 +477,6 @@ if mode == "Learner":
     st.divider()
     st.subheader(f"🏅 Current Score for {st.session_state.name}: {st.session_state.score}")
 
-# ==================== Instructor MODE ====================
 else:
     st.subheader("🔐 Instructor Dashboard")
     password = st.text_input("Enter teacher password:", type="password")
