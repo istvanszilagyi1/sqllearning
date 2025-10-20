@@ -292,8 +292,8 @@ if mode == "Learner":
             },
             {
                 "story": "🔗 You are looking for a specific employee but only remember that their name contains the sequence 'an'.",
-                "task": "List the **name** and **email** of employees whose name **contains 'an'** anywhere.",
-                "expected": "SELECT name, email FROM employees WHERE name LIKE '%an%';"
+                "task": "List the **name** and **hire date** of employees whose name **contains 'an'** anywhere.",
+                "expected": "SELECT name, hire_date FROM employees WHERE name LIKE '%an%';"
             }
         ],
         "ORDER BY": [
