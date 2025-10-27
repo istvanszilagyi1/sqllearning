@@ -15,7 +15,7 @@ st.set_page_config(page_title="Advanced SQL Learning App", layout="wide")
 st.title("🧩 Advanced SQL Learning Platform")
 st.write("""
 Welcome to the interactive SQL learning app!  
-Choose your mode on the left, and explore **joins**, **subqueries**, and **aggregations** step-by-step.
+Choose your mode on the left, and explore **JOINs**, **subqueries**, and **aggregations** step-by-step.
 """)
 
 # ======================== ER DIAGRAM ========================
@@ -108,36 +108,77 @@ if mode == "Student":
     task_types = {
         "JOINs": [
             {
-                "title": "Simple INNER JOIN",
-                "explanation": "An INNER JOIN returns rows with matching values in both tables.",
-                "visual": "A ∩ B (intersection)",
-                "story": "Show project names with their department managers.",
+                "title": "INNER JOIN alapok",
+                "explanation": "Az INNER JOIN csak azokat a sorokat adja vissza, amelyek mindkét táblában megtalálhatók.",
+                "visual": "🟦 A ∩ B – csak a közös rész marad meg.",
+                "story": "Listázd ki a projektek nevét és az őket kezelő részlegek vezetőjét!",
                 "expected": "SELECT p.name AS project, d.manager FROM projects p JOIN departments d ON p.department_id = d.id;"
             },
             {
-                "title": "LEFT JOIN",
-                "explanation": "A LEFT JOIN returns all rows from the left table, even if there’s no match on the right.",
-                "visual": "A ⟕ B",
-                "story": "List all departments and their projects (even those without projects).",
+                "title": "LEFT JOIN – minden bal oldali elem",
+                "explanation": "A LEFT JOIN a bal oldali tábla összes sorát visszaadja, akkor is, ha nincs párja a jobb oldalon.",
+                "visual": "🟦 A ⟕ B – a bal tábla minden sora + közös találatok.",
+                "story": "Listázd ki az összes részleget és a hozzájuk tartozó projekteket (akkor is, ha egy részleghez nincs projekt).",
                 "expected": "SELECT d.name AS department, p.name AS project FROM departments d LEFT JOIN projects p ON d.id = p.department_id;"
+            },
+            {
+                "title": "RIGHT JOIN (helyettesítve LEFT JOIN-nel SQLite-ban)",
+                "explanation": "A RIGHT JOIN a jobb oldali tábla összes sorát adja vissza. Mivel SQLite-ban nincs RIGHT JOIN, a sorrendet megcseréljük.",
+                "visual": "🟦 A ⟖ B – a jobb tábla minden sora + közös találatok.",
+                "story": "Listázd a projekteket és a hozzájuk tartozó részlegeket úgy, hogy minden projekt megjelenjen.",
+                "expected": "SELECT p.name AS project, d.name AS department FROM departments d LEFT JOIN projects p ON d.id = p.department_id;"
+            },
+            {
+                "title": "FULL OUTER JOIN (helyettesítve UNION-nel)",
+                "explanation": "A FULL OUTER JOIN mindkét tábla sorait visszaadja, akkor is, ha nincs párjuk. SQLite-ban UNION-nel szimuláljuk.",
+                "visual": "🟦 A ∪ B – minden sor megmarad mindkét táblából.",
+                "story": "Listázd ki az összes részleget és projektet (akkor is, ha valamelyiknek nincs párja).",
+                "expected": """
+                SELECT d.name AS department, p.name AS project 
+                FROM departments d LEFT JOIN projects p ON d.id = p.department_id
+                UNION
+                SELECT d.name AS department, p.name AS project 
+                FROM departments d LEFT JOIN projects p ON d.id = p.department_id;
+                """
+            },
+            {
+                "title": "💡 Vegyes gyakorló JOIN",
+                "explanation": "Itt már nem kapsz segítséget — döntsd el, melyik JOIN típus illik a feladathoz!",
+                "visual": "❓ Döntsd el: INNER, LEFT vagy más?",
+                "story": "Listázd ki az összes alkalmazottat és az általuk végzett feladatokat, akkor is, ha valakinek még nincs feladata.",
+                "expected": "SELECT e.name AS employee, t.status FROM employees e LEFT JOIN tasks t ON e.id = t.assigned_to;"
             }
         ],
         "Subqueries": [
             {
-                "title": "Basic Subquery",
-                "explanation": "A subquery allows using the result of another query inside a WHERE clause.",
-                "visual": "Filter rows by nested query result.",
-                "story": "List employees working in departments with projects over 1,000,000 budget.",
+                "title": "Egyszerű al-lekérdezés",
+                "explanation": "A subquery a WHERE részben használható másik lekérdezés eredményének szűrésére.",
+                "visual": "🌀 Bemeneti szűrés egy másik lekérdezés alapján.",
+                "story": "Listázd azokat az alkalmazottakat, akik olyan részlegen dolgoznak, ahol a projektek költségvetése 1 000 000 felett van.",
                 "expected": "SELECT name FROM employees WHERE department_id IN (SELECT department_id FROM projects WHERE budget > 1000000);"
+            },
+            {
+                "title": "Subquery SELECT részben",
+                "explanation": "Az al-lekérdezés nemcsak WHERE-ben, hanem SELECT részben is használható számításra.",
+                "visual": "🧮 Beágyazott számítások egy soronkénti lekérdezésben.",
+                "story": "Mutasd meg minden részlegnél a projektek számát!",
+                "expected": "SELECT d.name, (SELECT COUNT(*) FROM projects p WHERE p.department_id = d.id) AS project_count FROM departments d;"
             }
         ],
         "Aggregations": [
             {
-                "title": "GROUP BY and HAVING",
-                "explanation": "Use GROUP BY to group rows, and HAVING to filter groups.",
-                "visual": "Σ grouped results.",
-                "story": "Show departments where average salary exceeds 600,000.",
+                "title": "GROUP BY és HAVING gyakorlás",
+                "explanation": "A GROUP BY csoportosítja az adatokat, a HAVING pedig szűr a csoportokra.",
+                "visual": "Σ összegzés és szűrés csoportonként.",
+                "story": "Listázd azokat a részlegeket, ahol az átlagfizetés 600 000 fölött van.",
                 "expected": "SELECT department_id, AVG(salary) FROM employees GROUP BY department_id HAVING AVG(salary) > 600000;"
+            },
+            {
+                "title": "📘 Ismétlés – Összetett lekérdezés",
+                "explanation": "Ismétlés az első óráról: kombináld a SELECT, FROM, WHERE, GROUP BY, HAVING kulcsszavakat.",
+                "visual": "🧩 Minden elem együtt: szűrés, csoportosítás, aggregálás.",
+                "story": "Listázd azokat a részlegeket, ahol több mint egy alkalmazott dolgozik és az átlagfizetésük 500 000 felett van.",
+                "expected": "SELECT department_id, COUNT(*), AVG(salary) FROM employees WHERE salary > 400000 GROUP BY department_id HAVING COUNT(*) > 1 AND AVG(salary) > 500000;"
             }
         ]
     }
