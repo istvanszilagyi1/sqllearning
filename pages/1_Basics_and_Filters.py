@@ -9,6 +9,36 @@ import graphviz
 TEACHER_PASSWORD = "sql2025"
 
 st.set_page_config(page_title="SQL Basics & Filters", layout="wide")
+st.markdown("""
+    <style>
+    .stTextArea textarea {
+        font-family: 'Courier New', monospace;
+        font-size: 16px;
+    }
+    .task-box {
+        background-color: #f9f9ff;
+        padding: 1.2em;
+        border-radius: 12px;
+        border: 1px solid #ddd;
+        margin-top: 1em;
+        margin-bottom: 1em;
+    }
+    .tip-box {
+        background-color: #eaf7ea;
+        border-left: 4px solid #4CAF50;
+        padding: 1em;
+        border-radius: 8px;
+        margin-bottom: 1em;
+    }
+    .story-box {
+        background-color: #fff8e1;
+        border-left: 4px solid #FFC107;
+        padding: 1em;
+        border-radius: 8px;
+        margin-bottom: 1em;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 st.title("🎓 Interactive SQL Training App")
 st.write("Students: Enter your name, select a task type, complete the SQL task, and run your query. Results are logged automatically.")
